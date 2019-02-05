@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Start - Leaflet</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/lodash/4.16.2/lodash.min.js"></script>
+</head>
+<body>
+
+
+<style>
+.marker-pin {
+  width: 30px;
+  height: 30px;
+  border-radius: 50% 50% 50% 0;
+  background: #c30b82;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -15px 0 0 -15px;
+}
+// to draw white circle
+.marker-pin::after {
+    content: '';
+    width: 24px;
+    height: 24px;
+    margin: 3px 0 0 3px;
+    background: #fff;
+    position: absolute;
+    border-radius: 50%;
+ }
+
+// to align icon
+.custom-div-icon i {
+   position: absolute;
+   width: 22px;
+   font-size: 22px;
+   left: 0;
+   right: 0;
+   margin: 10px auto;
+   text-align: center;
+}
+
+</style>
+
+
+
+<div id="mapid" style="width:100%; height: 800px;"></div>
+
+<script type="text/html" id="popup-template">
+<div class="audio-popup">
+    <h2><%= title %></h2>
+    <audio src="<%= sound %>" controls ></audio>
+</div>
+</script>
+
+
+<script type="text/html" id="marker-template">
+    <svg width="40" height="40">
+      <circle cx="20" cy="20" r="10" fill="#3ec1cf " stroke="black" stroke-width="1"/>
+      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"><%= text %></text>    
+    </svg>
+</script>
+
+
+
+
+
+<script>
+    function elementText(elementid) {
+      return document.getElementById(elementid).innerText
+    }
+
+    function create_icon(iconnumber) {
+        var marker_template = window._.template(elementText('marker-template'));
+        var custom_marker_html = marker_template({'text': iconnumber});
+
+        var icon = L.divIcon({
+            className: 'custom-div-icon',
+            html: custom_marker_html,
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+        });
+
+        return icon
+
+    }
+
+    function create_sound_marker(map, id, position, title, sound_url) {
+
+        var custom_icon = create_icon(id);
+        var marker = L.marker(
+            position, {icon: custom_icon})
+
+        var rich_title = `Piste ${id} : ${title}`;
+
+        var custom_popup = window._.template(elementText('popup-template'))({sound: sound_url, title: rich_title})
+        marker.bindPopup(custom_popup);
+
+        marker.addTo(mymap);
+
+    }
+
+
+
+    var mymap = L.map('mapid').setView([48.8701, 2.3948], 15);
+
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+        maxZoom: 18,
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+            'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        id: 'mapbox/streets-v11',
+        tileSize: 512,
+        zoomOffset: -1
+    }).addTo(mymap);
+
+
+
+
+    <!-- Balade 1 -->
+    create_sound_marker(mymap, 1,  [48.86471, 2.38967], "Nom du quartier", "https://music.wixstatic.com/mp3/ea0114_a5eafea9981745a182b715f2dd47cafd.mp3");
+    create_sound_marker(mymap, 2,  [48.86551, 2.38988], "Ce qu'il reste des anciennes", "https://music.wixstatic.com/mp3/ea0114_fefeab8b2bcb4b57a61dc1dc2a7901ce.mp3");
+    create_sound_marker(mymap, 3,  [48.86564, 2.39313], "Des lieux pour les jeunes", "https://music.wixstatic.com/mp3/ea0114_694e2fcb4222421a86b60c97b7d51111.mp3");
+    create_sound_marker(mymap, 4,  [48.86651, 2.39177], "Jeux et aménagement", "https://music.wixstatic.com/mp3/ea0114_d1a599e6448d42b88d3ad2b74e993db3.mp3");
+    create_sound_marker(mymap, 5,  [48.8678,  2.39044], "Les espaces de liberté", "https://music.wixstatic.com/mp3/ea0114_80b09dfb71d7482086a0ce90db3d6a41.mp3");
+    create_sound_marker(mymap, 6,  [48.86865, 2.38961], "Démolition de l'ilot insalubre", "https://music.wixstatic.com/mp3/ea0114_66d640bc2c5d45d5a377641354bc12d9.mp3");
+    create_sound_marker(mymap, 7,  [48.86629, 2.38966], "Appropriation ou privatisation de l'espace public", "https://music.wixstatic.com/mp3/ea0114_f67bb3da0e9d4919ba566991919df66a.mp3");
+    create_sound_marker(mymap, 8,  [48.86574, 2.38751], "Rue duris, la mauvaise réputation", "https://music.wixstatic.com/mp3/ea0114_ee623c12c1cd4c7084db492ea9227a6f.mp3");
+    create_sound_marker(mymap, 9,  [48.86662, 2.38662], "Des ateliers d'artisans aux lofts d'artistes", "https://music.wixstatic.com/mp3/ea0114_ca9bdba2af8e42949bcce4752bd620a1.mp3");
+    create_sound_marker(mymap, 10, [48.86755, 2.38506], "L'importance des cafés", "https://music.wixstatic.com/mp3/ea0114_a00c2c2e540c4ade879e26f2bcf3ac89.mp3");
+    create_sound_marker(mymap, 11,  [48.86637, 2.38578], "Terrain d'éducation physique", "https://music.wixstatic.com/mp3/ea0114_1da7a4101885436489e5bdf5d77d90fb.mp3");
+    create_sound_marker(mymap, 12,  [48.86548, 2.38636], "L'attachement au quartier", "https://music.wixstatic.com/mp3/ea0114_13580d1106dc44e7a955aa42b4d3eb7f.mp3");
+    create_sound_marker(mymap, 13,  [48.86416, 2.38616], "Immigation et mélange", "https://music.wixstatic.com/mp3/ea0114_d450b63bc7024641aa3b9562e0768669.mp3");
+    create_sound_marker(mymap, 14,  [48.86484, 2.38800], "Transformation récente et commerces, plus présentation 20e Chaise", "https://music.wixstatic.com/mp3/ea0114_2c40e9a4aacb4a46a7c7714e2fb7a155.mp3");
+
+    var balade1 = [
+        [48.86471, 2.38967],
+        [48.86551, 2.38985],
+        [48.86551, 2.39033],
+        [48.86513, 2.39114],
+        [48.86511, 2.39237],
+        [48.86564, 2.39313],
+        [48.86651, 2.39177],
+        [48.8667, 2.39195],
+        [48.86715, 2.39141],
+        [48.8678, 2.39044],
+        [48.86865, 2.38961],
+        [48.8683, 2.38817],
+        [48.86733, 2.38899],
+        [48.86629, 2.38966],
+        [48.86574, 2.38751],
+        [48.86668, 2.38702],
+        [48.86662, 2.38662],
+        [48.86705, 2.38635],
+        [48.86705, 2.38635],
+        [48.86693, 2.3858],
+        [48.86759, 2.38529],
+        [48.86755, 2.38506],
+        [48.86686, 2.38547],
+        [48.86648, 2.38532],
+        [48.86633, 2.38556],
+        [48.86637, 2.38578],
+        [48.86548, 2.38636],
+        [48.86515, 2.38504],
+        [48.86416, 2.38616],
+        [48.86484, 2.388],
+        [48.86422, 2.38813],
+        [48.86386, 2.38912],
+        [48.86471, 2.38967]
+    ];
+    var chemin = L.polyline(
+        balade1,
+        {
+            color: '#ff633f'
+        }
+    ).addTo(mymap);
+    chemin.bindTooltip(
+        "Balade 1",
+        {
+            direction: "top",
+            permanent: "true"
+        }
+    ).openTooltip();
+
+
+    create_sound_marker(mymap, 1,  [48.876950, 2.397670], "De La Fabrik au collège Guillaume Budé", "https://music.wixstatic.com/preview/ea0114_f55d56f443a24e4c97cd4428fe9a9b3e-128.mp3");
+    create_sound_marker(mymap, 2,  [48.876860, 2.396560], "Mobilisations collectives", "https://music.wixstatic.com/preview/ea0114_26d40cfa2b8a421ca7368dbac6c975db-128.mp3");
+    create_sound_marker(mymap, 3,  [48.876410, 2.395970], "Des lieux d'animation", "https://music.wixstatic.com/preview/ea0114_630d5b0da1af4010b230f989110f59ab-128.mp3");
+    create_sound_marker(mymap, 4,  [48.877810, 2.395610], "L'architecture du quartier", "https://music.wixstatic.com/preview/ea0114_390035a0b3084fd4ac9e94e104df2a61-128.mp3");
+    create_sound_marker(mymap, 5,  [48.877730, 2.393610], "Ambiance PDF", "https://music.wixstatic.com/preview/ea0114_44d4b9ce084b4a4b94382d376d1ad8da-128.mp3");
+    create_sound_marker(mymap, 6,  [48.875660, 2.395006], "Parcs et cafés lieux de convivialité", "https://music.wixstatic.com/preview/ea0114_beaede4870fe45d193228219f27289fd-128.mp3");
+    create_sound_marker(mymap, 7,  [48.872360, 2.397930], "Commerces et associations, place dans l'animation", "https://music.wixstatic.com/preview/ea0114_f36ac9d46bb541d7998c1bbd0815dbb5-128.mp3");
+    create_sound_marker(mymap, 8,  [48.873880, 2.403434], "Les relations complexes d'un quartier multiculturel", "https://music.wixstatic.com/preview/ea0114_f9d94f6e8f4d4b90b1386fcfbf02d296-128.mp3");
+    create_sound_marker(mymap, 9,  [48.876010, 2.401846], "Frontière(S)", "https://music.wixstatic.com/preview/ea0114_168be8ee4d9b4df598bf0c43310a2bb6-128.mp3");
+    create_sound_marker(mymap, 10, [48.875561, 2.399244], "Les goûts musicaux", "https://music.wixstatic.com/preview/ea0114_880bd24f80344f5691b388956199d941-128.mp3");
+    create_sound_marker(mymap, 11, [48.878283, 2.398158], "La Fabrik et l'éducation populaire", "https://music.wixstatic.com/preview/ea0114_ee5e7fedc8044d728706ead37535e7c5-128.mp3");
+
+    var balade2 = [
+        [48.87695, 2.39767],
+        [48.87686, 2.39656],
+        [48.87672, 2.39555],
+        [48.87661, 2.39551],
+        [48.87661, 2.39551],
+        [48.87651, 2.39593],
+        [48.87641, 2.39597],
+        [48.87651, 2.39593],
+        [48.87661, 2.39551],
+        [48.87764, 2.39557],
+        [48.87778, 2.39571],
+        [48.877816,2.39561],
+        [48.877881,2.39552],
+
+        [48.87789, 2.39552],
+        [48.87892, 2.39612],
+        [48.87871, 2.39404],
+        [48.87828, 2.39410],
+        [48.87790, 2.39344],
+        [48.87773, 2.39361],
+        [48.87752, 2.393783],
+        [48.87715, 2.394049],
+        [48.87610, 2.394783],
+        [48.87566, 2.395006],
+
+        [48.87526, 2.395229],
+        [48.87526, 2.395357],
+        [48.87439, 2.395827],
+        [48.87402, 2.395889],
+        [48.87296, 2.396213],
+        [48.87301, 2.396586],
+        [48.87292, 2.396822],
+        [48.87238, 2.397699],
+        [48.87231, 2.397782],
+        [48.87236, 2.397930],
+
+        [48.87273, 2.399255],
+        [48.87321, 2.400969],
+        [48.87388, 2.403434],
+
+        [48.87428, 2.403262],
+        [48.87596, 2.402540],
+        [48.87591, 2.401974],
+        [48.87601, 2.401846],
+
+        [48.875916, 2.400942],
+        [48.875778, 2.400907],
+        [48.875561, 2.399244],
+
+        [48.876350, 2.399606],
+        [48.876655, 2.399746],
+        [48.876775, 2.399311],
+        [48.877315, 2.398970],
+        [48.877615, 2.398772],
+        [48.877745, 2.398498],
+        [48.878310, 2.398340],
+        [48.878283, 2.398158],
+
+        [48.878253, 2.397932],
+        [48.876996, 2.397916],
+    ];
+    var chemin = L.polyline(
+        balade2,
+        {
+            color: '#ff633f'
+        }
+    ).addTo(mymap);
+
+    chemin.bindTooltip(
+        "Balade 2",
+        {
+            direction: "top",
+            permanent: "true"
+        }
+    ).openTooltip();
+
+
+
+
+
+</script>
+
+
+
+</body>
+</html>
